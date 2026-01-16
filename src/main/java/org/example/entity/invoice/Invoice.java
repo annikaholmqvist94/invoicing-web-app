@@ -110,23 +110,14 @@ public class Invoice {
      * Din önskade beräkningslogik som hanterar både netto, moms och brutto.
      */
     public void recalculateTotals() {
-        if (items == null || items.isEmpty()) {
-            this.totalNetAmount = BigDecimal.ZERO;
-            this.totalVatAmount = BigDecimal.ZERO;
-            this.totalGrossAmount = BigDecimal.ZERO;
-            return;
-        }
-
-        // Beräkna Netto (Pris * Antal för alla rader)
         this.totalNetAmount = items.stream()
-                .map(item -> item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .map(InvoiceItem::getLineNetAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // Beräkna Moms (Hämtar förberäknad moms från varje rad om den finns)
         this.totalVatAmount = items.stream()
                 .map(item -> item.getVatAmount() != null ? item.getVatAmount() : BigDecimal.ZERO)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // Beräkna Brutto (Att betala)
         this.totalGrossAmount = this.totalNetAmount.add(this.totalVatAmount);
     }
+}

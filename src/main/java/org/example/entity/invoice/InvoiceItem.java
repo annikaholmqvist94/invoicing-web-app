@@ -2,7 +2,6 @@ package org.example.entity.invoice;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.math.BigDecimal;
 import java.util.UUID;
 
@@ -10,24 +9,31 @@ import java.util.UUID;
 @Table(name = "invoice_items")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class InvoiceItem {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "invoice_id", nullable = false)
     private Invoice invoice;
 
-    private Integer quantity;
+    private String name;
+    private int quantity;
     private BigDecimal unitPrice;
 
-    // Ny parameter för moms
+    // Detta fält tillåter nu manuell inmatning från användaren
     private BigDecimal vatAmount;
 
-    // Hjälpmetod för att beräkna radens total (Antal * Pris + Moms)
-    public BigDecimal getTotalLineAmount() {
-        BigDecimal base = unitPrice.multiply(BigDecimal.valueOf(quantity));
-        return base.add(vatAmount != null ? vatAmount : BigDecimal.ZERO);
+    public BigDecimal getLineNetAmount() {
+        if (unitPrice == null) return BigDecimal.ZERO;
+        return unitPrice.multiply(BigDecimal.valueOf(quantity));
     }
 
+    // Denna används av Invoice.recalculateTotals()
+    public BigDecimal getTotalLineAmount() {
+        BigDecimal net = getLineNetAmount();
+        BigDecimal vat = (vatAmount != null) ? vatAmount : BigDecimal.ZERO;
+        return net.add(vat);
+    }
 }
