@@ -3,8 +3,6 @@ package org.example.service;
 import lombok.RequiredArgsConstructor;
 import org.example.entity.client.Client;
 import org.example.entity.client.ClientDTO;
-import org.example.entity.client.CreateClientDTO;
-import org.example.entity.client.UpdateClientDTO;
 import org.example.entity.company.Company;
 import org.example.exception.EntityNotFoundException;
 import org.example.repository.ClientRepository;
