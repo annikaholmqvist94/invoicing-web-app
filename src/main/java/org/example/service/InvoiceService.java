@@ -31,7 +31,6 @@ public class InvoiceService {
     public InvoiceDTO createInvoice(CreateInvoiceDTO dto) {
         log.info("Skapar faktura {} för företag {}", dto.number(), dto.companyId());
 
-        // Validera att fakturanumret är unikt (från din gamla logik)
         if (invoiceRepository.findByNumber(dto.number()).isPresent()) {
             throw new BusinessRuleException("Fakturanummer " + dto.number() + " används redan.");
         }
@@ -42,7 +41,6 @@ public class InvoiceService {
         Client client = clientRepository.findById(dto.clientId())
                 .orElseThrow(() -> new EntityNotFoundException("Klienten hittades inte"));
 
-        // Bygg fakturan med Builder (istället för fromDTO för bättre kontroll)
         Invoice invoice = Invoice.builder()
                 .number(dto.number())
                 .company(company)
@@ -52,7 +50,6 @@ public class InvoiceService {
                 .items(new ArrayList<>())
                 .build();
 
-        // Mappa rader med manuell vatAmount
         if (dto.items() != null) {
             dto.items().forEach(itemDto -> {
                 InvoiceItem item = InvoiceItem.builder()
@@ -62,12 +59,12 @@ public class InvoiceService {
                         .vatAmount(itemDto.vatAmount())
                         .invoice(invoice)
                         .build();
-                invoice.addItem(item); // Använd addItem för att trigga omdanande av totalsummor
+                invoice.addItem(item);
             });
         }
 
         invoice.recalculateTotals();
-        return InvoiceDTO.fromEntity(invoiceRepository.save(invoice));
+        return toDTO(invoiceRepository.save(invoice));
     }
 
     @Transactional
@@ -77,11 +74,9 @@ public class InvoiceService {
         Invoice invoice = invoiceRepository.findById(dto.invoiceId())
                 .orElseThrow(() -> new EntityNotFoundException("Fakturan hittades inte"));
 
-        // Uppdatera grundfält
         if (dto.dueDate() != null) invoice.setDueDate(dto.dueDate());
         if (dto.status() != null) invoice.setStatus(dto.status());
 
-        // Om rader skickas med, ersätt de gamla (från din gamla logik)
         if (dto.items() != null) {
             invoice.clearItems();
             dto.items().forEach(itemDto -> {
@@ -97,19 +92,18 @@ public class InvoiceService {
         }
 
         invoice.recalculateTotals();
-        return InvoiceDTO.fromEntity(invoiceRepository.save(invoice));
+        return toDTO(invoiceRepository.save(invoice));
     }
 
     @Transactional(readOnly = true)
     public Optional<InvoiceDTO> getInvoiceById(UUID id) {
-        return invoiceRepository.findById(id)
-                .map(InvoiceDTO::fromEntity);
+        return invoiceRepository.findById(id).map(this::toDTO);
     }
 
     @Transactional(readOnly = true)
     public List<InvoiceDTO> getInvoicesByCompany(UUID companyId) {
         return invoiceRepository.findByCompanyId(companyId).stream()
-                .map(InvoiceDTO::fromEntity)
+                .map(this::toDTO)
                 .toList();
     }
 
@@ -118,12 +112,40 @@ public class InvoiceService {
         Invoice invoice = invoiceRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Fakturan hittades inte"));
 
-        // Säkerhetsregel från din gamla logik
         if ("PAID".equals(invoice.getStatus())) {
             throw new BusinessRuleException("Betalda fakturor kan inte raderas");
         }
 
         invoiceRepository.delete(invoice);
         log.info("Faktura {} raderad", id);
+    }
+
+    /**
+     * Hjälpmetod för att omvandla Invoice-entitet till InvoiceDTO.
+     * Denna mappar även alla fakturarader (InvoiceItem) till InvoiceItemDTO.
+     */
+    private InvoiceDTO toDTO(Invoice entity) {
+        List<InvoiceItemDTO> itemDTOs = entity.getItems().stream()
+                .map(item -> InvoiceItemDTO.builder()
+                        .id(item.getId())
+                        .name(item.getName())
+                        .quantity(item.getQuantity())
+                        .unitPrice(item.getUnitPrice())
+                        .vatAmount(item.getVatAmount())
+                        .totalLineAmount(item.getTotalLineAmount())
+                        .build())
+                .toList();
+
+        return InvoiceDTO.builder()
+                .id(entity.getId())
+                .number(entity.getNumber())
+                .dueDate(entity.getDueDate())
+                .status(entity.getStatus())
+                .totalNetAmount(entity.getTotalNetAmount())
+                .totalVatAmount(entity.getTotalVatAmount())
+                .totalGrossAmount(entity.getTotalGrossAmount())
+                .items(itemDTOs)
+                .createdAt(entity.getCreatedAt())
+                .build();
     }
 }
