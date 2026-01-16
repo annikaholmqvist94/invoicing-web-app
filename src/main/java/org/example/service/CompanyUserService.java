@@ -29,4 +29,10 @@ public class CompanyUserService {
         user.getCompanies().add(company);
         userRepository.save(user); // JPA sköter automatiskt insättningen i user_company
     }
+
+    @Transactional
+    public void connectUserToCompany(User user, Company company) {
+        user.getCompanies().add(company);
+        userRepository.save(user);
+    }
 }

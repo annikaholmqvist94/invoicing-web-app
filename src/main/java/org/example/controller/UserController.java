@@ -1,7 +1,7 @@
-package org.example.domain.user;
+package org.example.controller;
 
 import org.example.dto.user.UserDTO;
-import org.example.entity.User;
+import org.example.entity.user.User;
 import org.example.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
