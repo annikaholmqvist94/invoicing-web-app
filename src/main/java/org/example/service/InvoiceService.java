@@ -7,7 +7,6 @@ import org.example.entity.company.Company;
 import org.example.entity.invoice.*;
 import org.example.exception.BusinessRuleException;
 import org.example.exception.EntityNotFoundException;
-import org.example.repository.ClientRepository;
 import org.example.repository.CompanyRepository;
 import org.example.repository.InvoiceRepository;
 import org.springframework.stereotype.Service;
