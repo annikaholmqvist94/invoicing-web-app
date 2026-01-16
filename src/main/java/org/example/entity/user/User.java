@@ -26,6 +26,7 @@ public class User {
 
 
     // I User.java
+    @Builder.Default
     @ManyToMany
     @JoinTable(
             name = "user_company",
