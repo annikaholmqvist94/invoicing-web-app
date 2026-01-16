@@ -1,4 +1,4 @@
-package org.example.dto.company;
+package org.example.entity.company;
 
 import java.util.UUID;
 
@@ -11,5 +11,8 @@ public record CompanyDTO(
         String address,
         String city,
         String country
-) {}
+) {
+    public static CompanyDTO fromEntity(Company save) {
+    }
+}
 

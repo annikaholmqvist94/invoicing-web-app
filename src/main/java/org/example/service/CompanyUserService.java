@@ -1,7 +1,7 @@
 package org.example.service;
 
-import org.example.entity.Company;
-import org.example.entity.User;
+import org.example.entity.company.Company;
+import org.example.entity.user.User;
 import org.example.repository.CompanyRepository;
 import org.example.repository.UserRepository;
 import org.springframework.stereotype.Service;

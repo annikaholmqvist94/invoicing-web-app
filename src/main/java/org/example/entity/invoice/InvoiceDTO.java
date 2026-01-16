@@ -1,3 +1,5 @@
+package org.example.entity.invoice;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,5 +13,8 @@ public record InvoiceDTO(
         BigDecimal totalNetAmount,
         BigDecimal totalVatAmount,
         BigDecimal totalGrossAmount,
-        List<org.example.dto.invoice.InvoiceItemDTO> items
-) {}
+        List<org.example.entity.invoice.InvoiceItemDTO> items
+) {
+    public static InvoiceDTO fromEntity(Invoice save) {
+    }
+}

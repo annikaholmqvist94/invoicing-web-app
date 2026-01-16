@@ -1,4 +1,4 @@
-package org.example.dto.invoice;
+package org.example.entity.invoice;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

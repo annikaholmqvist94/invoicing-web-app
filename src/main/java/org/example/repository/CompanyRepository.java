@@ -7,4 +7,5 @@ import java.util.UUID;
 
 @Repository
 public interface CompanyRepository extends JpaRepository<Company, UUID> {
+    boolean existsByOrgNum(String attr0);
 }

@@ -1,4 +1,4 @@
-package org.example.dto.user;
+package org.example.entity.user;
 
 import java.util.UUID;
 

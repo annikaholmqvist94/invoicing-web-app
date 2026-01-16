@@ -1,4 +1,4 @@
-package org.example.dto.client;
+package org.example.entity.client;
 
 import java.util.UUID;
 
@@ -11,4 +11,7 @@ public record ClientDTO(
         String address,
         String city,
         String country
-) {}
+) {
+    public static Object fromEntity(Client client) {
+    }
+}

@@ -29,4 +29,5 @@ public class InvoiceItem {
         BigDecimal base = unitPrice.multiply(BigDecimal.valueOf(quantity));
         return base.add(vatAmount != null ? vatAmount : BigDecimal.ZERO);
     }
+
 }
