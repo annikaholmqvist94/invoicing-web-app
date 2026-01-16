@@ -52,6 +52,25 @@ public class CompanyUserService {
         log.info("Användare {} tillagd i företag {}", user.getId(), companyId);
     }
 
+    @Transactional
+    public void addUserToCompanyById(UUID companyId, UUID userId) {
+        log.info("Kopplar användare {} till företag {}", userId, companyId);
+
+        Company company = companyRepository.findById(companyId)
+                .orElseThrow(() -> new EntityNotFoundException("Företag med ID " + companyId + " hittades inte"));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Användare med ID " + userId + " hittades inte"));
+
+        CompanyUserId id = new CompanyUserId(userId, companyId);
+
+        if (companyUserRepository.existsById(id)) {
+            throw new BusinessRuleException("Användaren är redan kopplad till detta företag");
+        }
+
+        companyUserRepository.save(new CompanyUser(user, company));
+    }
+
     /**
      * Tar bort en användare från ett företag.
      */

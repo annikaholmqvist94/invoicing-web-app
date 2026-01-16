@@ -94,4 +94,6 @@ public class CompanyService {
         companyRepository.deleteById(companyId);
         log.info("Företag med ID: {} raderat", companyId);
     }
+
+
 }
