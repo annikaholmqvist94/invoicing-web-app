@@ -1,6 +1,6 @@
 package org.example.controller;
 
-import org.example.dto.user.UserDTO;
+import org.example.entity.user.UserDTO;
 import org.example.entity.user.User;
 import org.example.service.UserService;
 import org.springframework.http.ResponseEntity;
