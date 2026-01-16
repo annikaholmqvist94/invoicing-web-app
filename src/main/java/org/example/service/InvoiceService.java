@@ -1,6 +1,8 @@
 package org.example.service;
 
 import org.example.entity.invoice.Invoice;
+import org.example.exception.BusinessRuleException;
+import org.example.exception.EntityNotFoundException;
 import org.example.repository.InvoiceItemRepository;
 import org.example.repository.InvoiceRepository;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,19 @@ public class InvoiceService {
         // Sparar de uppdaterade totalbeloppen
         return invoiceRepository.save(invoice);
     }
+
+    // Exempel i InvoiceService
+    public void deleteInvoice(UUID id) {
+        Invoice invoice = InvoiceRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Fakturan finns inte"));
+
+        if ("PAID".equals(invoice.getStatus())) {
+            throw new BusinessRuleException("Du kan inte radera en faktura som redan är markerad som betald!");
+        }
+
+        InvoiceRepository.delete(invoice);
+    }
+
 
     // Exempel i InvoiceService
     public InvoiceDTO toDTO(Invoice entity) {

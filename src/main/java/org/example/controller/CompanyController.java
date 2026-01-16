@@ -1,6 +1,6 @@
-package org.example.domain.company;
+package org.example.controller;
 
-import org.example.entity.Company;
+import org.example.entity.company.Company;
 import org.example.service.CompanyService;
 import org.example.service.CompanyUserService;
 import org.springframework.http.ResponseEntity;
