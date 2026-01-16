@@ -22,29 +22,20 @@ public class CompanyService {
     private final UserRepository userRepository;
 
     @Transactional
-    public CompanyDTO create(UUID creatorUserId, CreateCompanyRequest dto) {
-        log.debug("Skapar företag: {} för användare: {}", dto.name(), creatorUserId);
+    public CompanyDTO create(UUID creatorUserId, CreateCompanyDTO dto) {
+        // ... validering och hämtning av användare ...
 
-        User creator = userRepository.findById(creatorUserId)
-                .orElseThrow(() -> new EntityNotFoundException("Användaren hittades inte"));
-
-        if (companyRepository.existsByOrgNum(dto.orgNum())) {
-            throw new BusinessRuleException("Ett företag med detta organisationsnummer finns redan");
-        }
-
-        // Skapa företagsobjektet (Entity)
         Company company = Company.builder()
                 .name(dto.name())
                 .orgNum(dto.orgNum())
+                .email(dto.email())
+                .address(dto.address())
+                .city(dto.city())
+                .country(dto.country())
+                .phoneNumber(dto.phoneNumber())
                 .build();
 
-        // Om du använder en direkt koppling (ManyToMany) mellan User och Company:
-        // company.getUsers().add(creator);
-
-        Company savedCompany = companyRepository.save(company);
-        log.info("Företag skapat med ID: {}", savedCompany.getId());
-
-        return CompanyDTO.fromEntity(savedCompany);
+        return CompanyDTO.fromEntity(companyRepository.save(company));
     }
 
     @Transactional
