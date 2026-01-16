@@ -35,7 +35,7 @@ public class CompanyUserService {
         log.info("Försöker lägga till användare med e-post {} till företag {}", email, companyId);
 
         Company company = companyRepository.findById(companyId)
-                .orElseThrow(() -> new EntityNotFoundException("Företag", companyId));
+                .orElseThrow(() -> new EntityNotFoundException("Företag med ID " + companyId + " hittades inte"));
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Användare med e-post " + email + " hittades inte"));

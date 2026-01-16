@@ -70,7 +70,7 @@ public class Company {
      */
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
-    private Set<User> users = new HashSet<>();
+    private Set<CompanyUser> users = new HashSet<>();
 
     // Hjälpmetoder för att hålla logiken ren i din Service
 
