@@ -1,0 +1,11 @@
+# Ignorera den bruna mappen med kompilerade filer
+/target/
+
+# Ignorera IntelliJ-inställningar
+.idea/
+*.iml
+
+# Ignorera loggar
+*.log
+
+
