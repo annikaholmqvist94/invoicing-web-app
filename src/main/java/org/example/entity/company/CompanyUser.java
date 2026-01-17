@@ -26,7 +26,7 @@ public class CompanyUser {
     @JoinColumn(name = "company_id")
     private Company company;
 
-    // Hjälpkonstruktor som används i din CompanyService
+
     public CompanyUser(User user, Company company) {
         this.user = user;
         this.company = company;
