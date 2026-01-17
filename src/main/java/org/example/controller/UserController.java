@@ -1,26 +1,28 @@
 package org.example.controller;
 
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.example.entity.user.CreateUserDTO;
 import org.example.entity.user.UserDTO;
-import org.example.entity.user.User;
 import org.example.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/users")
+@RequiredArgsConstructor // Lägg till denna för att slippa skriva konstruktorn manuellt
 public class UserController {
 
     private final UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
     @PostMapping("/register")
-    public ResponseEntity<UserDTO> register(@RequestBody User user) {
-        // I ett senare steg mappar vi om 'user' till 'UserDTO' här
-        User savedUser = userService.registerUser(user);
-        UserDTO response = new UserDTO(savedUser.getId(), savedUser.getFirstName(), savedUser.getLastName(), savedUser.getEmail());
-        return ResponseEntity.ok(response);
+    public ResponseEntity<UserDTO> register(@Valid @RequestBody CreateUserDTO dto) {
+        // Vi mappar om DTO till en User i servicen eller här
+        UserDTO response = userService.registerUser(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }
