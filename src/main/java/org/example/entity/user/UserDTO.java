@@ -18,5 +18,6 @@ public record UserDTO(
                 user.getLastName(),
                 user.getEmail()
         );
+
     }
 }
