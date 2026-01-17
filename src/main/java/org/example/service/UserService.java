@@ -33,7 +33,6 @@ public class UserService {
         return UserDTO.fromEntity(savedUser);
     }
 
-
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
