@@ -12,7 +12,7 @@ import java.util.UUID;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor // Detta ersätter din manuella konstruktor
 public class UserService {
 
     private final UserRepository userRepository;
@@ -29,9 +29,7 @@ public class UserService {
 
         User savedUser = userRepository.save(user);
 
-
         return UserDTO.fromEntity(savedUser);
-
     }
 
     public Optional<User> findByEmail(String email) {
@@ -41,6 +39,4 @@ public class UserService {
     public Optional<User> findById(UUID id) {
         return userRepository.findById(id);
     }
-
-
 }

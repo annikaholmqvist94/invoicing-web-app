@@ -8,7 +8,6 @@ public record UserDTO(
         String lastName,
         String email
 ) {
-
     public static UserDTO fromEntity(User user) {
         if (user == null) return null;
 
@@ -18,8 +17,6 @@ public record UserDTO(
                 user.getLastName(),
                 user.getEmail()
         );
-
-
-
     }
+
 }
