@@ -12,10 +12,4 @@ public class InvoicingApplication {
         SpringApplication.run(InvoicingApplication.class, args);
     }
 
-    // Vi lägger till denna Bean här så att din UserService
-    // kan använda den för att kryptera lösenord
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 }
