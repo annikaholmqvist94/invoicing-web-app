@@ -1,5 +1,7 @@
 package org.example.service;
 
+import lombok.RequiredArgsConstructor;
+import org.example.entity.user.CreateUserDTO;
 import org.example.entity.user.User;
 import org.example.entity.user.UserDTO;
 import org.example.repository.UserRepository;
@@ -10,21 +12,24 @@ import java.util.UUID;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor // Detta ersätter din manuella konstruktor
 public class UserService {
 
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder passwordEncoder; // Ingen "new" här
-
-    // Spring skickar nu in både repositoryt OCH encodern automatiskt
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Transactional
-    public User registerUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+    public UserDTO registerUser(CreateUserDTO dto) {
+        User user = User.builder()
+                .firstName(dto.firstName())
+                .lastName(dto.lastName())
+                .email(dto.email())
+                .password(passwordEncoder.encode(dto.password()))
+                .build();
+
+        User savedUser = userRepository.save(user);
+
+        return UserDTO.fromEntity(savedUser);
     }
 
     public Optional<User> findByEmail(String email) {
@@ -33,14 +38,5 @@ public class UserService {
 
     public Optional<User> findById(UUID id) {
         return userRepository.findById(id);
-    }
-
-    public UserDTO toDTO(User user) {
-        return new UserDTO(
-                user.getId(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getEmail()
-        );
     }
 }

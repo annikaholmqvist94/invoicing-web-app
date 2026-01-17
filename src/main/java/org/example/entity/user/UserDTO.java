@@ -7,4 +7,16 @@ public record UserDTO(
         String firstName,
         String lastName,
         String email
-) {}
+) {
+    public static UserDTO fromEntity(User user) {
+        if (user == null) return null;
+
+        return new UserDTO(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail()
+        );
+    }
+
+}
