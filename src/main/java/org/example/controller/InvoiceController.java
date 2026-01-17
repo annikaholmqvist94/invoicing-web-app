@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.entity.invoice.CreateInvoiceDTO;
 import org.example.entity.invoice.InvoiceDTO;
 import org.example.entity.invoice.UpdateInvoiceDTO;
+import org.example.security.SecurityService;
 import org.example.service.InvoiceService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,12 +24,15 @@ import java.util.UUID;
 public class InvoiceController {
 
     private final InvoiceService invoiceService;
+    private final SecurityService securityService;
 
     /**
      * Skapar en ny faktura med manuellt angivna momsbelopp per rad.
      */
     @PostMapping
     public ResponseEntity<InvoiceDTO> createInvoice(@Valid @RequestBody CreateInvoiceDTO dto) {
+        securityService.verifyCompanyAccess(dto.companyId());
+
         InvoiceDTO createdInvoice = invoiceService.createInvoice(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdInvoice);
     }
@@ -48,7 +52,8 @@ public class InvoiceController {
      */
     @GetMapping("/company/{companyId}")
     public ResponseEntity<List<InvoiceDTO>> getInvoicesByCompany(@PathVariable UUID companyId) {
-        // Hämta inloggad användare från SecurityContext
+        securityService.verifyCompanyAccess(companyId);
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String currentUserEmail = auth.getName();
 
