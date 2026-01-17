@@ -2,12 +2,15 @@ package org.example.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.entity.invoice.CreateInvoiceDTO;
 import org.example.entity.invoice.InvoiceDTO;
 import org.example.entity.invoice.UpdateInvoiceDTO;
 import org.example.service.InvoiceService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +19,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/invoices")
 @RequiredArgsConstructor // Skapar automatiskt konstruktorn för dina final services
+@Slf4j
 public class InvoiceController {
 
     private final InvoiceService invoiceService;
@@ -44,6 +48,14 @@ public class InvoiceController {
      */
     @GetMapping("/company/{companyId}")
     public ResponseEntity<List<InvoiceDTO>> getInvoicesByCompany(@PathVariable UUID companyId) {
+        // Hämta inloggad användare från SecurityContext
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserEmail = auth.getName();
+
+        log.info("Användare {} försöker hämta fakturor för företag {}", currentUserEmail, companyId);
+
+        // Här bör du i en perfekt värld kontrollera att currentUserEmail faktiskt
+        // har tillgång till companyId innan du anropar servicen.
         List<InvoiceDTO> invoices = invoiceService.getInvoicesByCompany(companyId);
         return ResponseEntity.ok(invoices);
     }
