@@ -1,12 +1,13 @@
 # Ignorera den bruna mappen med kompilerade filer
-/target/
+target/
+*.class
 
 # Ignorera IntelliJ-inställningar
 .idea/
 *.iml
 
-target/
-*.class
+
+
 # Ignorera loggar
 *.log
 
