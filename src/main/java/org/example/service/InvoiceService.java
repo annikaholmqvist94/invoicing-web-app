@@ -10,6 +10,7 @@ import org.example.exception.EntityNotFoundException;
 import org.example.repository.ClientRepository;
 import org.example.repository.CompanyRepository;
 import org.example.repository.InvoiceRepository;
+import org.example.security.SecurityService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,9 +27,11 @@ public class InvoiceService {
     private final InvoiceRepository invoiceRepository;
     private final CompanyRepository companyRepository;
     private final ClientRepository clientRepository;
+    private final SecurityService securityService;
 
     @Transactional
     public InvoiceDTO createInvoice(CreateInvoiceDTO dto) {
+        securityService.verifyCompanyAccess(dto.companyId());
         log.info("Skapar faktura {} för företag {}", dto.number(), dto.companyId());
 
         if (invoiceRepository.findByNumber(dto.number()).isPresent()) {
@@ -97,7 +100,7 @@ public class InvoiceService {
 
     @Transactional(readOnly = true)
     public Optional<InvoiceDTO> getInvoiceById(UUID id) {
-        return invoiceRepository.findById(id).map(this::toDTO);
+        return invoiceRepository.findByIdWithItems(id).map(this::toDTO);
     }
 
     @Transactional(readOnly = true)
@@ -111,6 +114,7 @@ public class InvoiceService {
     public void deleteById(UUID id) {
         Invoice invoice = invoiceRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Fakturan hittades inte"));
+        securityService.verifyCompanyAccess(invoice.getCompany().getId());
 
         if ("PAID".equals(invoice.getStatus())) {
             throw new BusinessRuleException("Betalda fakturor kan inte raderas");
