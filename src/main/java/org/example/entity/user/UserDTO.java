@@ -19,5 +19,6 @@ public record UserDTO(
                 user.getEmail()
         );
 
+
     }
 }
