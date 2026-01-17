@@ -1,44 +1,39 @@
 package org.example.service;
 
+import lombok.RequiredArgsConstructor;
+import org.example.entity.user.CreateUserDTO;
 import org.example.entity.user.User;
 import org.example.entity.company.Company;
 import org.example.repository.UserRepository;
 import org.example.repository.CompanyRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
-    private final CompanyRepository companyRepository;
-
-    public DataInitializer(UserRepository userRepository, CompanyRepository companyRepository) {
-        this.userRepository = userRepository;
-        this.companyRepository = companyRepository;
-    }
+    private final UserService userService;
 
     @Override
+    @Transactional
     public void run(String... args) {
-        if (userRepository.count() == 0) {
-            // Skapa testföretag
-            Company company = new Company();
-            company.setName("Mitt Testföretag AB");
-            company.setOrgNum("556677-8899");
-            companyRepository.save(company);
-
-            // Skapa testanvändare
-            User user = new User();
-            user.setFirstName("Annika");
-            user.setLastName("Test");
-            user.setEmail("test@example.com");
-            user.setPassword("password123"); // Kom ihåg: i verkligheten ska detta krypteras!
-
-            // Koppla ihop dem!
-            user.getCompanies().add(company);
-            userRepository.save(user);
-
-            System.out.println(">> Testdata har skapats i Azure-databasen!");
+        try{
+            if (userRepository.count() == 0) {
+                userService.registerUser(new CreateUserDTO(
+                        "Admin",
+                        "User",
+                        "admin@example.com",
+                        "Admin1234!"
+                ));
+                System.out.println(">>> Test user created successfully!");
+            } else {
+                System.out.println(">>> Database already contains users, skipping initialization.");
+            }
+        } catch(Exception e){
+            System.err.println("Could not initialize data: " + e.getMessage());
         }
     }
 }
