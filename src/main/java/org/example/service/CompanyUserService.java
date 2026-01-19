@@ -98,8 +98,16 @@ public class CompanyUserService {
     /**
      * Hämtar alla företag en viss användare tillhör.
      */
-    @Transactional(readOnly = true)
-    public List<CompanyUser> getUserCompanies(UUID userId) {
-        return companyUserRepository.findByUserId(userId);
+    // I CompanyUserService.java
+    @Transactional
+    public void linkUserToCompany(UUID userId, UUID companyId) {
+        User user = userRepository.findById(userId).orElseThrow();
+        Company company = companyRepository.findById(companyId).orElseThrow();
+
+        // Skapa kopplings-entiteten
+        CompanyUser association = new CompanyUser(user, company);
+        // Om du har ett roll-fält, sätt det här: association.setRole("OWNER");
+
+        companyUserRepository.save(association);
     }
 }
