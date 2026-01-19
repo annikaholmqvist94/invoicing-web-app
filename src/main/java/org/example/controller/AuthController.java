@@ -9,6 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -21,12 +22,19 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        return userService.findByEmail(request.email())
-                .filter(user -> passwordEncoder.matches(request.password(), user.getPassword()))
+        System.out.println("Inloggningsförsök för: " + request.email()); // DEBUG
+
+        return userService.findEntityByEmail(request.email())
                 .map(user -> {
-                    String token = jwtService.generateToken(user.getEmail());
-                    return ResponseEntity.ok(Map.of("token", token));
+                    boolean matches = passwordEncoder.matches(request.password(), user.getPassword());
+                    System.out.println("Lösenord matchar: " + matches); // DEBUG
+                    if (matches) {
+                        String token = jwtService.generateToken(user.getEmail());
+                        return ResponseEntity.ok(Map.of("token", token));
+                    }
+                    return ResponseEntity.status(401).build();
                 })
                 .orElse(ResponseEntity.status(401).build());
     }
+
 }
