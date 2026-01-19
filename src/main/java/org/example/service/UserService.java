@@ -1,5 +1,6 @@
 package org.example.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.example.entity.user.CreateUserDTO;
 import org.example.entity.user.User;
@@ -31,8 +32,15 @@ public class UserService {
 
         return UserDTO.fromEntity(savedUser);
     }
+    @Transactional(readOnly = true)
+    public UserDTO findByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        return UserDTO.fromEntity(user);
+    }
 
-    public Optional<User> findByEmail(String email) {
+    // För intern användning (inloggning)
+    public Optional<User> findEntityByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
@@ -40,3 +48,4 @@ public class UserService {
         return userRepository.findById(id);
     }
 }
+
