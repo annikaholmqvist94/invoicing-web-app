@@ -22,6 +22,8 @@ public class CompanyService {
     private final CompanyRepository companyRepository;
     private final UserRepository userRepository;
     private final CompanyUserRepository companyUserRepository;
+    private final CompanyUserService companyUserService;
+
 
     /**
      * Skapar ett nytt företag och kopplar skaparen till företaget.
@@ -93,6 +95,31 @@ public class CompanyService {
         // JPA sköter borttagning av rader i company_user automatiskt om du har CascadeType.ALL
         companyRepository.deleteById(companyId);
         log.info("Företag med ID: {} raderat", companyId);
+    }
+
+    @Transactional
+    public CompanyDTO createCompanyByEmail(CreateCompanyDTO dto, String email) {
+        // 1. Skapa och spara företaget
+        Company company = Company.builder()
+                .name(dto.name())
+                .orgNum(dto.orgNum())
+                .email(dto.email())
+                .phoneNumber(dto.phoneNumber())
+                .address(dto.address())
+                .city(dto.city())
+                .country(dto.country())
+                .build();
+
+        Company savedCompany = companyRepository.save(company);
+
+        // 2. Hitta användaren via e-post (från JWT)
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Användare med e-post " + email + " hittades inte"));
+
+        // 3. Länka ihop dem
+        companyUserService.linkUserToCompany(user.getId(), savedCompany.getId());
+
+        return CompanyDTO.fromEntity(savedCompany);
     }
 
 
