@@ -140,6 +140,7 @@ public class InvoiceService {
                         .build())
                 .toList();
 
+
         return InvoiceDTO.builder()
                 .id(entity.getId())
                 .number(entity.getNumber())
